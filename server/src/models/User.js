@@ -52,6 +52,10 @@ const userSchema = new Schema(
       unique: true,
       sparse: true,
     },
+    resetPasswordLink: {
+      data: String,
+      default: '',
+    },
     messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
   },
   { timestamps: true },
@@ -96,10 +100,11 @@ userSchema.methods.generateJWT = function () {
   );
   return token;
 };
+//Mojtest
 
 userSchema.methods.registerUser = (newUser, callback) => {
   bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(newUser.password, salt, (errh, hash) => {
+    bcrypt.hash(newUser.password, salt, (err, hash) => {
       if (err) {
         console.log(err);
       }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useParams } from 'react-router-dom';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import Cookies from 'js-cookie';
@@ -11,6 +11,7 @@ import Profile from './pages/Profile/Profile';
 import Users from './pages/Users/Users';
 import Admin from './pages/Admin/Admin';
 import NotFound from './pages/NotFound/NotFound';
+import Reset from './pages/Reset/Reset';
 
 import Loader from './components/Loader/Loader';
 
@@ -49,6 +50,8 @@ const App = ({ logInUserWithOauth, auth, loadMe }) => {
           <Route path="/admin" component={Admin} />
           <Route exact path="/:username" component={Profile} />
           <Route exact path="/" component={Home} />
+          <Route exact path="/auth/password/reset/:token" component={Reset} />
+
           <Route component={NotFound} />
         </Switch>
       ) : (
