@@ -90,6 +90,11 @@ const Login = ({ auth, history, loginUserWithEmail }) => {
               Register
             </Link>
           </div>
+          <div>
+            <Link className="bold" to="/auth/password/forgot">
+              Zabudli ste heslo?
+            </Link>
+          </div>
         </form>
       </div>
     </div>

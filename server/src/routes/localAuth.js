@@ -9,8 +9,24 @@ import User from '../models/User';
 import requireLocalAuth from '../middleware/requireLocalAuth';
 import { registerSchema } from '../services/validators';
 import { sendEmailWithNodemailer } from '../../helpers/email';
+const ejs = require('ejs');
 
 const router = Router();
+
+/* const emailData = {
+  from: 'marek@em1036.qr.smecar.sk', // MAKE SURE THIS EMAIL IS YOUR GMAIL FOR WHICH YOU GENERATED APP PASSWORD
+  to: email, // WHO SHOULD BE RECEIVING THIS EMAIL? IT SHOULD BE THE USER EMAIL (VALID EMAIL ADDRESS) WHO IS TRYING TO SIGNUP
+  subject: 'Obnova hesla ŠmecarQR',
+  html: `
+            <h1>Ahoj </h1>
+            <p>${process.env.CLIENT_URL_DEV}/auth/password/reset/${token}</p>
+            <hr />
+            
+            <p>Platí iba 10 minut od odoslania </p>
+            <p>S láskou </p>
+            <p>${process.env.CLIENT_URL_DEV}</p>
+        `,
+}; */
 
 router.post('/forgot-password', (req, res) => {
   let { email } = req.body;
@@ -25,31 +41,36 @@ router.post('/forgot-password', (req, res) => {
       expiresIn: '30m',
     });
 
-    const emailData = {
-      from: 'marek@em1036.qr.smecar.sk', // MAKE SURE THIS EMAIL IS YOUR GMAIL FOR WHICH YOU GENERATED APP PASSWORD
-      to: email, // WHO SHOULD BE RECEIVING THIS EMAIL? IT SHOULD BE THE USER EMAIL (VALID EMAIL ADDRESS) WHO IS TRYING TO SIGNUP
-      subject: 'Obnova hesla ŠmecarQR',
-      html: `
-                <h1>Prosím použite tento link na obnovu hesla</h1>
-                <p>${process.env.CLIENT_URL_DEV}/auth/password/reset/${token}</p>
-                <hr />
-                
-                <p>Platí iba 10 minut od odoslania </p>
-                <p>S láskou </p>
-                <p>${process.env.CLIENT_URL_DEV}</p>
-            `,
-    };
+    ejs.renderFile(
+      process.cwd() + '/helpers/emailTemplates/passwordReset.ejs',
+      { name: user.name.split(' ')[0], link: `${process.env.CLIENT_URL_DEV}/auth/password/reset/${token}` },
+      function (err, data) {
+        if (err) {
+          console.log('RESET PASSWORD TEMPLATE ERROR', err);
+          return res.status(400).json({
+            error: 'template error',
+          });
+        }
 
-    return user.updateOne({ resetPasswordLink: token }, (err, success) => {
-      if (err) {
-        console.log('RESET PASSWORD LINK ERROR', err);
-        return res.status(400).json({
-          error: 'Database connection error on user password forgot request',
+        const emailData = {
+          from: 'marek@em1036.qr.smecar.sk',
+          to: email,
+          subject: 'Obnova hesla ŠmecarQR',
+          html: data,
+        };
+
+        return user.updateOne({ resetPasswordLink: token }, (err, success) => {
+          if (err) {
+            console.log('RESET PASSWORD LINK ERROR', err);
+            return res.status(400).json({
+              error: 'Database connection error on user password forgot request',
+            });
+          } else {
+            sendEmailWithNodemailer(req, res, emailData);
+          }
         });
-      } else {
-        sendEmailWithNodemailer(req, res, emailData);
-      }
-    });
+      },
+    );
   });
 });
 

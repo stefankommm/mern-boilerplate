@@ -12,6 +12,7 @@ import Users from './pages/Users/Users';
 import Admin from './pages/Admin/Admin';
 import NotFound from './pages/NotFound/NotFound';
 import Reset from './pages/Reset/Reset';
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 
 import Loader from './components/Loader/Loader';
 
@@ -51,6 +52,7 @@ const App = ({ logInUserWithOauth, auth, loadMe }) => {
           <Route exact path="/:username" component={Profile} />
           <Route exact path="/" component={Home} />
           <Route exact path="/auth/password/reset/:token" component={Reset} />
+          <Route exact path="/auth/password/forgot" component={ForgotPassword} />
 
           <Route component={NotFound} />
         </Switch>

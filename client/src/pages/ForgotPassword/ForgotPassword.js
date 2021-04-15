@@ -7,25 +7,23 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 
-import { loginUserWithEmail } from '../../store/actions/authActions';
+import { forgotPassword, loginUserWithEmail } from '../../store/actions/authActions';
 import { FACEBOOK_AUTH_LINK, GOOGLE_AUTH_LINK } from '../../constants';
-import { loginSchema } from './validation';
+import { forgotSchema } from './validation';
 import './styles.css';
-import { resetPassword } from '../../store/actions/authActions';
 
-const Reset = ({ auth, register: { isLoading, error, params }, history, resetPassword }) => {
+const ForgotPassword = ({ auth, history, forgotPassword }) => {
   const [sent, setSent] = useState(false);
+  const [resetToken, setResetToken] = useState('');
   let { token } = useParams();
   const formik = useFormik({
     initialValues: {
       newPassword: '',
     },
-    validationSchema: loginSchema,
+    validationSchema: forgotSchema,
     onSubmit: (values) => {
-      formik.values.resetPasswordLink = token;
       setSent(true);
-      console.log('SUBMIT RESET VALUES: ', values);
-      resetPassword(values, history);
+      forgotPassword(values, history);
     },
   });
 
@@ -36,9 +34,6 @@ const Reset = ({ auth, register: { isLoading, error, params }, history, resetPas
       setResetToken(token);
     }
   }, []);
-  if (sent) return <Redirect to="/" />;
-
-  if (auth.isAuthenticated) return <Redirect to="/" />;
 
   return (
     <div className="login">
@@ -48,19 +43,18 @@ const Reset = ({ auth, register: { isLoading, error, params }, history, resetPas
         <form onSubmit={formik.handleSubmit}>
           <div>
             <input
-              placeholder="Password"
-              name="newPassword"
-              type="password"
+              placeholder="Email"
+              name="email"
+              type="text"
               className="text"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.newPassword}
+              value={formik.values.email}
             />
-            {formik.touched.newPassword && formik.errors.newPassword ? (
-              <p className="error">{formik.errors.newPassword}</p>
+            {formik.touched.email && formik.errors.newPassword ? (
+              <p className="error">{formik.errors.email}</p>
             ) : null}
           </div>
-          {auth.error && <p className="error">{auth.error}</p>}
           <div>
             <button
               className="btn submit"
@@ -70,6 +64,7 @@ const Reset = ({ auth, register: { isLoading, error, params }, history, resetPas
               Zmeniť Heslo
             </button>
           </div>
+          <div></div>
         </form>
       </div>
     </div>
@@ -81,4 +76,4 @@ const mapStateToProps = (state) => ({
   register: state.register,
 });
 
-export default compose(withRouter, connect(mapStateToProps, { resetPassword }))(Reset);
+export default compose(withRouter, connect(mapStateToProps, { forgotPassword }))(ForgotPassword);

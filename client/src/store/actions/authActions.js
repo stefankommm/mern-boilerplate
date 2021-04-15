@@ -15,6 +15,12 @@ import {
   RESEED_DATABASE_LOADING,
   RESEED_DATABASE_SUCCESS,
   RESEED_DATABASE_FAIL,
+  FORGOT_PASSWORD_LOADING,
+  FORGOT_PASSWORD_SUCCESS,
+  FORGOT_PASSWORD_FAIL,
+  RESET_PASSWORD_LOADING,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_FAIL,
 } from '../types';
 
 export const loadMe = () => async (dispatch, getState) => {
@@ -51,6 +57,44 @@ export const loginUserWithEmail = (formData, history) => async (dispatch, getSta
   } catch (err) {
     dispatch({
       type: LOGIN_WITH_EMAIL_FAIL,
+      payload: { error: err.response.data.message },
+    });
+  }
+};
+
+export const forgotPassword = (formData, history) => async (dispatch, getState) => {
+  dispatch({ type: FORGOT_PASSWORD_LOADING });
+  try {
+    const response = await axios.post('/auth/forgot-password', formData);
+
+    dispatch({
+      type: FORGOT_PASSWORD_SUCCESS,
+      payload: { token: response.data.token, me: response.data.me },
+    });
+
+    history.push('/');
+  } catch (err) {
+    dispatch({
+      type: FORGOT_PASSWORD_FAIL,
+      payload: { error: err.response.data.message },
+    });
+  }
+};
+
+export const resetPassword = (formData, history) => async (dispatch, getState) => {
+  dispatch({ type: RESET_PASSWORD_LOADING });
+  try {
+    const response = await axios.post('/auth/reset-password', formData);
+
+    dispatch({
+      type: RESET_PASSWORD_SUCCESS,
+      payload: { token: response.data.token, me: response.data.me },
+    });
+
+    history.push('/');
+  } catch (err) {
+    dispatch({
+      type: RESET_PASSWORD_FAIL,
       payload: { error: err.response.data.message },
     });
   }
