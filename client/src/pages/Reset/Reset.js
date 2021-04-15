@@ -32,9 +32,6 @@ const Reset = ({ auth, register: { isLoading, error, params }, history, resetPas
   useEffect(() => {
     /* let token = params.token; */
     // console.log(name);
-    if (token) {
-      setResetToken(token);
-    }
   }, []);
   if (sent) return <Redirect to="/" />;
 
