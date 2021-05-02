@@ -6,7 +6,7 @@
 - [x] nodemailer
 - [x] nodemailer-sendgrid
 - [x] EJS Email templating
-- [x] S3 Profile picture storage
+- [ ] S3 Profile picture storage
 - [ ] Update the website
 - [ ] Contact the media
 
